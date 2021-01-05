@@ -1,0 +1,10 @@
+SELECT maximum_attendees AS 'Maximum Attendees',genre_type AS Genre,
+DAYNAME(date_time_from) AS Day,
+IF(COUNT(student_id)=maximum_attendees,'Full',IF(maximum_attendees-COUNT(student_id)>2,'3+',maximum_attendees-COUNT(student_id))) AS 'Seats Left'
+FROM ensamble
+JOIN genre ON fixed_time_slot_id=ensamble_id
+JOIN fixed_time_slots ON PK_id = ensamble.fixed_time_slot_id
+JOIN fixed_time_slot_student ON PK_id=fixed_time_slot_student.fixed_time_slot_id
+WHERE fixed_time_slots.date_time_from < DATE_ADD(NOW(), INTERVAL 1 WEEK) AND fixed_time_slots.date_time_from > NOW()
+GROUP BY fixed_time_slot_student.fixed_time_slot_id
+ORDER BY Genre, Day

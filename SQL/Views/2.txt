@@ -1,0 +1,17 @@
+(SELECT 'TOTAL' as 'month', 'ALL' as 'instrument', count(*) AS rents
+FROM rent 
+WHERE YEAR(rent_date)=2020)
+UNION
+(SELECT 'TOTAL' as 'month', instrument_type as 'instrument', count(instrument_type) as rents
+FROM insrument_for_rent
+JOIN rent ON PK_id=rent_id
+WHERE rent_id IS NOT NULL AND YEAR(rent_date)=2020
+GROUP BY instrument_type)
+UNION
+SELECT 'Average all' as month,instrument,(SUM(rents))/12
+FROM
+(SELECT MONTH(rent_date) as 'month', 'ALL' as 'instrument', count(DATE(rent_date)) as rents
+FROM rent
+WHERE YEAR(rent_date)=2020
+GROUP BY MONTH(rent_date)
+ORDER BY rents DESC) AS hejhopp

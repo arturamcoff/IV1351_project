@@ -1,0 +1,14 @@
+(SELECT MONTHNAME(date_time_from) AS month,'ALL' AS type, COUNT(date_time_from) AS Number
+FROM (SELECT date_time_from FROM fixed_time_slots UNION ALL SELECT date_time_from FROM appointment) AS date_time_from
+WHERE YEAR(date_time_from)=2021
+GROUP BY MONTH(date_time_from))
+UNION ALL
+(SELECT 'TOTAL' AS month,'ALL' AS type, COUNT(*)
+FROM (SELECT date_time_from FROM fixed_time_slots UNION ALL SELECT date_time_from FROM appointment) AS date_time_from
+WHERE YEAR(date_time_from)=2021)
+UNION ALL
+(SELECT 'TOTAL' AS month, 'Ensamble' as Type, COUNT(*) FROM ensamble JOIN fixed_time_slots ON fixed_time_slot_id=PK_id WHERE YEAR(fixed_time_slots.date_time_from)=2021)
+UNION ALL
+(SELECT 'TOTAL' AS month, 'Group Lesson' as Type, COUNT(*) FROM group_lesson JOIN fixed_time_slots ON fixed_time_slot_id=PK_id WHERE YEAR(fixed_time_slots.date_time_from)=2021)
+UNION ALL
+(SELECT 'TOTAL' AS month, 'Individual Lesson' as Type, COUNT(*) FROM individual_lesson JOIN appointment ON appointment_id=PK_id WHERE YEAR(appointment.date_time_from)=2021)

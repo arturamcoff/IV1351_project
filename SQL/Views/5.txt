@@ -1,0 +1,67 @@
+(SELECT
+'>X lessons THIS month' AS Category,
+    first_name AS FirstName,
+    last_name AS LastName,
+    COUNT(src.instructor_id) AS NumberOfLessons
+FROM
+    (
+        (
+        SELECT
+            instructor_id,
+            date_time_from
+        FROM
+            fixed_time_slots_instructor
+        JOIN fixed_time_slots ON fixed_time_slots_id = PK_id
+        WHERE
+            YEAR(date_time_from) = YEAR(NOW()) AND MONTH(date_time_from) = MONTH(NOW()))
+        UNION ALL
+            (
+            SELECT
+                instructor_id,
+                date_time_from
+            FROM
+                appointment_instructor
+            JOIN appointment ON appointment_id = PK_id
+            WHERE
+                YEAR(date_time_from) = YEAR(NOW()) AND MONTH(date_time_from) = MONTH(NOW()))) AS src 
+JOIN person ON person.instructor_id = src.instructor_id
+GROUP BY
+        (src.instructor_id)
+        HAVING COUNT(src.instructor_id)>1
+)
+
+
+
+
+UNION ALL
+
+
+
+
+SELECT * FROM(
+SELECT 'Top3 last month' AS Category, first_name, last_name, COUNT(*) as cnt
+FROM (
+        (
+        SELECT
+            instructor_id,
+            date_time_from
+        FROM
+            fixed_time_slots_instructor
+        JOIN fixed_time_slots ON fixed_time_slots_id = PK_id
+        WHERE
+            YEAR(date_time_from) = YEAR(NOW()) AND MONTH(date_time_from) = MONTH(NOW()))
+        UNION ALL
+            (
+            SELECT
+                instructor_id,
+                date_time_from
+            FROM
+                appointment_instructor
+            JOIN appointment ON appointment_id = PK_id
+            WHERE
+                date_time_from > DATE_ADD(date_time_from, INTERVAL -1 MONTH) AND date_time_from < NOW())) AS src
+JOIN person ON person.instructor_id=src.instructor_id
+GROUP BY src.instructor_id
+ORDER BY cnt DESC
+LIMIT 3
+) AS outerSrc

@@ -1,0 +1,11 @@
+SELECT instrument_type AS Type,brand as Brand,rent_price AS 'Price per month',date_time_from AS 'Next group lesson'
+FROM insrument_for_rent
+JOIN (SELECT date_time_from,instrument_id
+FROM group_lesson
+JOIN fixed_time_slots ON fixed_time_slot_id=PK_id
+JOIN instrument ON group_lesson.instrument_id=instrument.PK_id
+WHERE date_time_from>NOW()
+GROUP BY instrument.PK_id) AS a ON a.instrument_id = insrument_for_rent.instrument_id
+WHERE rent_id IS NULL
+ORDER BY rent_price ASC
+LIMIT 3
